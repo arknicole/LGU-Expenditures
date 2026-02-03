@@ -1,19 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. Initialize Filters
     populateYearFilter(); 
     populateSectorFilter();
     
-    // Add listener for Period selector
+    // 2. Attach Listeners
     document.getElementById('period_select').addEventListener('change', updateSubPeriodFilter);
-    updateSubPeriodFilter(); // Initialize
+    updateSubPeriodFilter(); // Initialize based on default selection
 
     document.getElementById('sector').addEventListener('change', () => populateOfficeFilter());
     
-    // Changing year or office triggers report generation
+    // Changing year or office triggers report generation automatically
     document.getElementById('office_id').addEventListener('change', generateReport);
     document.getElementById('year_select').addEventListener('change', () => {
         populateOfficeFilter(); 
     });
     
+    // Manual Refresh Button
     document.getElementById('viewReportButton').addEventListener('click', generateReport);
     
     // Print Button
@@ -80,6 +82,7 @@ async function populateSectorFilter() {
         sectorSelect.innerHTML = '<option value="">-- Select Sector --</option>';
         if (data.success && data.sectors.length > 0) {
             data.sectors.forEach(sector => sectorSelect.add(new Option(sector, sector)));
+            // Trigger office load if sector is already selected or updated
             await populateOfficeFilter();
         } else {
             sectorSelect.innerHTML = '<option value="">No sectors with data</option>';
@@ -94,11 +97,14 @@ async function populateOfficeFilter() {
     const sector = document.getElementById('sector').value;
     const officeSelect = document.getElementById('office_id');
     if (!officeSelect) return;
+    
     officeSelect.innerHTML = '<option value="">Loading...</option>';
+    
     if (!sector) {
         officeSelect.innerHTML = '<option value="">-- Select a Sector --</option>';
         return;
     }
+    
     try {
         const res = await fetch(`/api/reports/available-offices?sector=${encodeURIComponent(sector)}`);
         const data = await res.json();
@@ -128,7 +134,7 @@ async function generateReport() {
         return;
     }
 
-    // Calculate Dates
+    // Calculate Dates based on Period
     const period = document.getElementById('period_select').value;
     const subPeriod = document.getElementById('sub_period_select').value;
     let start_date, end_date;
@@ -167,7 +173,7 @@ function renderRecordOfExpenditures(data) {
     const reportContainer = document.getElementById('report_container');
 
     let html = `<h3>Record of Expenditures</h3>`;
-    html += `<table class="report-table" style="width:100%; border-collapse: collapse;">`;
+    html += `<table class="report-table" style="width:100%; border-collapse: collapse; table-layout: auto;">`;
 
     // --- HEADER LOGIC ---
     const countLeafNodes = (node) => {
@@ -183,10 +189,21 @@ function renderRecordOfExpenditures(data) {
     };
     
     const headerRows = { 0: [], 1: [], 2: [], 3: [] };
-    const staticHeaders = ['DV NO.', 'Particulars', 'Date'];
-    const thStyle = 'style="text-align:center; vertical-align:middle; background-color:#f2f2f2; border:1px solid #ccc; padding:5px;"';
     
-    staticHeaders.forEach(h => headerRows[0].push(`<th rowspan="4" ${thStyle}>${h}</th>`));
+    // --- FIX: DEFINED COLUMN WIDTHS ---
+    const staticColumns = [
+        { name: 'DV NO.', width: '100px' },
+        { name: 'Particulars', width: '350px' }, // Made this much wider
+        { name: 'Date', width: '100px' }
+    ];
+
+    // Standard styling for all header cells
+    const baseThStyle = 'text-align:center; vertical-align:middle; background-color:#f2f2f2; border:1px solid #ccc; padding:5px;';
+    
+    // Generate the static first 3 columns with Specific Widths
+    staticColumns.forEach(col => {
+        headerRows[0].push(`<th rowspan="4" style="${baseThStyle} width:${col.width}; min-width:${col.width};">${col.name}</th>`);
+    });
 
     // MAPPING FOR FULL NAMES
     const fullNames = {
@@ -196,19 +213,16 @@ function renderRecordOfExpenditures(data) {
     };
 
     const sortedObjectKeys = Object.keys(ppa_structure).sort((a, b) => {
-        // We use the raw keys (PS/MOOE/CO) for sorting logic
-        const order = { 'PS': 1, 'MOOE': 2, 'CO': 3, 'Personal Services': 1, 'Maintenance & Other Operating Expenditures': 2, 'Capital Outlay': 3 };
+        const order = { 'PS': 1, 'MOOE': 2, 'CO': 3 };
         return (order[a] || 99) - (order[b] || 99);
     });
 
     for (const objectKey of sortedObjectKeys) {
         const objectNode = ppa_structure[objectKey];
         const objectColspan = countLeafNodes(objectNode);
-        
-        // DISPLAY FULL NAME
         const displayKey = fullNames[objectKey] || objectKey;
 
-        if (objectColspan > 0) headerRows[0].push(`<th colspan="${objectColspan}" ${thStyle}>${displayKey}</th>`);
+        if (objectColspan > 0) headerRows[0].push(`<th colspan="${objectColspan}" style="${baseThStyle}">${displayKey}</th>`);
 
         for (const ppaKey in objectNode) {
             if (ppaKey === 'id') continue;
@@ -216,7 +230,7 @@ function renderRecordOfExpenditures(data) {
             const ppaColspan = countLeafNodes(ppaNode);
             const hasSubItems = Object.keys(ppaNode).some(k => k !== 'id'); 
             const ppaRowspan = ppaNode.id ? 3 : (hasSubItems ? 1 : 3); 
-            if (ppaColspan > 0) headerRows[1].push(`<th colspan="${ppaColspan}" rowspan="${ppaRowspan}" ${thStyle}>${ppaKey}</th>`);
+            if (ppaColspan > 0) headerRows[1].push(`<th colspan="${ppaColspan}" rowspan="${ppaRowspan}" style="${baseThStyle}">${ppaKey}</th>`);
             
             if (!ppaNode.id && hasSubItems) {
                 for (const subPpaKey in ppaNode) {
@@ -225,12 +239,12 @@ function renderRecordOfExpenditures(data) {
                     const subPpaColspan = countLeafNodes(subPpaNode);
                     const hasSubSubItems = Object.keys(subPpaNode).some(k => k !== 'id');
                     const subPpaRowspan = subPpaNode.id ? 2 : (hasSubSubItems ? 1 : 2); 
-                    if (subPpaColspan > 0) headerRows[2].push(`<th colspan="${subPpaColspan}" rowspan="${subPpaRowspan}" ${thStyle}>${subPpaKey}</th>`);
+                    if (subPpaColspan > 0) headerRows[2].push(`<th colspan="${subPpaColspan}" rowspan="${subPpaRowspan}" style="${baseThStyle}">${subPpaKey}</th>`);
                     
                     if (!subPpaNode.id && hasSubSubItems) {
                         for (const subSubPpaKey in subPpaNode) {
                             if (subSubPpaKey !== 'id') {
-                                headerRows[3].push(`<th ${thStyle}>${subSubPpaKey}</th>`);
+                                headerRows[3].push(`<th style="${baseThStyle}">${subSubPpaKey}</th>`);
                             }
                         }
                     }
@@ -239,7 +253,7 @@ function renderRecordOfExpenditures(data) {
         }
     }
     
-    headerRows[0].push(`<th rowspan="4" ${thStyle}>TOTAL</th>`);
+    headerRows[0].push(`<th rowspan="4" style="${baseThStyle} width:120px;">TOTAL</th>`);
 
     html += `<thead>`;
     for(let i=0; i<4; i++){
@@ -254,12 +268,13 @@ function renderRecordOfExpenditures(data) {
     html += `<tbody>`;
 
     if (!flat_headers || flat_headers.length === 0) {
-        const colspan = staticHeaders.length + 1; // +1 for Total
+        const colspan = staticColumns.length + 1; // +1 for Total
         html += `<tr><td colspan="${colspan}" style="text-align:center; padding:10px;">No data available for this selection.</td></tr>`;
     } else {
         const totalBudget = {};
         flat_headers.forEach(h => totalBudget[h.id] = 0);
 
+        // 1. Calculate Budgets
         const budgetSummary = { Allotment: {}, Supplemental: {} };
         const realignments = [];
 
@@ -282,14 +297,16 @@ function renderRecordOfExpenditures(data) {
                 realignments.push(t);
                 (t.details || []).forEach(d => {
                     let amt = parseFloat(d.amount);
-                    if (t.is_from === 1) amt = -amt;
+                    if (t.is_from === 1) amt = -amt; // Subtract if Source
                     totalBudget[d.category_id] += amt;
                 });
             }
         });
 
+        // 2. Render Budget Rows
         const renderBudgetRow = (label, dataMap) => {
             if (Object.keys(dataMap).length === 0) return '';
+            
             let rowHtml = `<tr class="budget-row"><td colspan="3"><strong>${label}</strong></td>`;
             let rowTotal = 0;
             flat_headers.forEach(header => {
@@ -315,12 +332,14 @@ function renderRecordOfExpenditures(data) {
                 const detail = (transaction.details || []).find(d => d.category_id === header.id);
                 let amount = detail ? parseFloat(detail.amount) : 0;
                 if(transaction.is_from === 1 && amount > 0) amount = -amount; 
+                
                 rowTotal += amount;
                 html += `<td style="text-align:right;"><strong>${amount ? formatCurrency(amount) : ''}</strong></td>`;
             });
             html += `<td style="text-align:right;"><strong>${formatCurrency(rowTotal)}</strong></td></tr>`;
         });
 
+        // Total Budget Row
         let grandTotalBudget = Object.values(totalBudget).reduce((sum, val) => sum + val, 0);
         html += `<tr class="total-row" style="background-color:#e0f7fa;"><td colspan="3"><strong>Total Budget</strong></td>`;
         flat_headers.forEach(header => {
@@ -329,6 +348,7 @@ function renderRecordOfExpenditures(data) {
         });
         html += `<td style="text-align:right;"><strong>${formatCurrency(grandTotalBudget)}</strong></td></tr>`;
 
+        // 3. Render Expenses
         if (expenses && expenses.length > 0) {
             let cumulativeExpenditure = {};
             flat_headers.forEach(h => cumulativeExpenditure[h.id] = 0);
@@ -347,6 +367,7 @@ function renderRecordOfExpenditures(data) {
                 html += `<td style="text-align:right;">${formatCurrency(rowTotal)}</td></tr>`;
             });
 
+            // Balance Row
             let balanceTotal = 0;
             html += `<tr class="total-row" style="background-color:#ffe0b2;"><td colspan="3"><strong>Balance</strong></td>`;
             flat_headers.forEach(header => {
@@ -356,6 +377,7 @@ function renderRecordOfExpenditures(data) {
             });
             html += `<td style="text-align:right;"><strong>${formatCurrency(balanceTotal)}</strong></td></tr>`;
         } else {
+            // Balance Row (No Expenses)
             let balanceTotal = 0;
             html += `<tr class="total-row" style="background-color:#ffe0b2;"><td colspan="3"><strong>Balance</strong></td>`;
             flat_headers.forEach(header => {

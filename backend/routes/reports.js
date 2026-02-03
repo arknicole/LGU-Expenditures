@@ -371,7 +371,7 @@ router.get('/dashboard-stats', async (req, res) => {
                 total_appropriations,
                 total_obligations,
                 remaining_balance,
-                pending_payables: 0 // Replace with real value if available
+                pending_payables: 0 
             }
         });
 
