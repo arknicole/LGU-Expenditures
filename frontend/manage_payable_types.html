@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Accounts Payable Types</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/auth-guard.js"></script>
+    <script src="/js/manage_payable_types.js" defer></script>
+    <script src="/js/admin_layout.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <a href="/dashboard.html">&larr; Back to Dashboard</a>
+        <h1>Manage Accounts Payable Types</h1>
+
+        <div class="form-section">
+            <h3>Add New Type</h3>
+            <form id="add-type-form">
+                <label for="fund_group">Fund Group:</label>
+                <input type="text" id="fund_group" placeholder="e.g., General Fund, Trust Fund">
+                <label for="type_name">Type Name:</label>
+                <input type="text" id="type_name" placeholder="e.g., GF - Main, PCF">
+                <button type="button" id="addTypeButton">Add Type</button>
+            </form>
+        </div>
+
+        <div class="form-section">
+            <h3>Existing Types</h3>
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>Fund Group</th>
+                        <th>Type Name</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="types_table_body">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

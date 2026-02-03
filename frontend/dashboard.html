@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard | LGU Expenditure System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/auth-guard.js"></script>
+    <script src="/js/helpers.js" defer></script>
+    <script>
+        // Simple logout script
+        function logout() {
+            if(confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('username');
+                window.location.href = '/index.html';
+            }
+        }
+    </script>
+</head>
+<body class="dashboard-body">
+
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-landmark" style="margin-right: 10px;"></i> LGU SYSTEM
+        </div>
+
+        <ul class="sidebar-menu">
+            <li>
+                <a href="/dashboard.html" class="sidebar-link active">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+            </li>
+
+            <li class="menu-label">TRANSACTIONS</li>
+            <li>
+                <a href="/allotment.html" class="sidebar-link">
+                    <i class="fas fa-money-check-alt"></i> Add Budget/Allotment
+                </a>
+            </li>
+            <li>
+                <a href="/expense_entry.html" class="sidebar-link">
+                    <i class="fas fa-file-invoice-dollar"></i> Add Expense Voucher
+                </a>
+            </li>
+            <li>
+                <a href="/payable_entry.html" class="sidebar-link">
+                    <i class="fas fa-file-invoice-dollar"></i> Add Account Payable
+                </a>
+            </li>
+
+            <li class="menu-label">REPORTS</li>
+            <li>
+                <a href="/report_record_of_expenditures.html" class="sidebar-link">
+                    <i class="fas fa-book"></i> Record of Expenses
+                </a>
+            </li>
+            <li>
+                <a href="/report_summary_appropriations.html" class="sidebar-link">
+                    <i class="fas fa-chart-pie"></i> Summary of Approp.
+                </a>
+            </li>
+            <li>
+                <a href="/report_accounts_payable.html" class="sidebar-link">
+                    <i class="fas fa-hand-holding-usd"></i> Accounts Payable
+                </a>
+            </li>
+            <li>
+                <a href="/report_records_of_cheques.html" class="sidebar-link">
+                    <i class="fas fa-money-check"></i> Records of Checks
+                </a>
+            </li>
+
+            <li class="menu-label">MANAGEMENT</li>
+            <li>
+                <a href="/category.html" class="sidebar-link">
+                    <i class="fas fa-tags"></i> Manage Categories
+                </a>
+            </li>
+            <li>
+                <a href="/office_manage.html" class="sidebar-link">
+                    <i class="fas fa-building"></i> Manage Offices
+                </a>
+            </li>
+            <li>
+                <a href="/manage_payable_types.html" class="sidebar-link">
+                    <i class="fas fa-list"></i> Payable Types
+                </a>
+            </li>
+
+            <li class="menu-label">SYSTEM</li>
+            <li>
+                <a href="#" onclick="logout()" class="sidebar-link">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        
+        <header class="top-header">
+            <div class="header-title">
+                MUNICIPALITY OF TUBLAY, BENGUET
+            </div>
+            <div class="user-profile">
+                <span>Welcome, Admin</span>
+                <i class="fas fa-user-circle fa-2x"></i>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            
+            <div class="stats-grid">
+                <div class="stat-card blue">
+                    <div class="stat-icon bg-blue"><i class="fas fa-coins"></i></div>
+                    <div class="stat-info">
+                        <h4>Total Appropriations</h4>
+                        <p id="stat_appropriations">Loading...</p> 
+                    </div>
+                </div>
+                <div class="stat-card green">
+                    <div class="stat-icon bg-green"><i class="fas fa-chart-line"></i></div>
+                    <div class="stat-info">
+                        <h4>Total Obligations</h4>
+                        <p id="stat_obligations">Loading...</p>
+                    </div>
+                </div>
+                <div class="stat-card orange">
+                    <div class="stat-icon bg-orange"><i class="fas fa-balance-scale"></i></div>
+                    <div class="stat-info">
+                        <h4>Remaining Balance</h4>
+                        <p id="stat_balance">Loading...</p>
+                    </div>
+                </div>
+                <div class="stat-card red">
+                    <div class="stat-icon bg-red"><i class="fas fa-exclamation-circle"></i></div>
+                    <div class="stat-info">
+                        <h4>Account Payables</h4>
+                        <p id="stat_payables">Loading...</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="margin-bottom: 20px; color: #555;">Quick Access</h3>
+            
+            <div class="quick-links">
+                <a href="/expense_entry.html" class="quick-link-card">
+                    <i class="fas fa-plus-circle"></i>
+                    <strong>New Voucher</strong>
+                </a>
+                <a href="/allotment.html" class="quick-link-card">
+                    <i class="fas fa-wallet"></i>
+                    <strong>Add Budget</strong>
+                </a>
+                <a href="/report_record_of_expenditures.html" class="quick-link-card">
+                    <i class="fas fa-file-alt"></i>
+                    <strong>View Ledger</strong>
+                </a>
+                <a href="/office_manage.html" class="quick-link-card">
+                    <i class="fas fa-building"></i>
+                    <strong>Offices</strong>
+                </a>
+            </div>
+
+        </div>
+    </main>
+<script src="/js/dashboard_stats.js"></script>
+</body>
+</html>

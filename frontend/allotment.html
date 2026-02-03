@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Allotment Management</title>
+    
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <script src="/js/auth-guard.js"></script>
+    <script src="/js/helpers.js" defer></script>
+    <script src="/js/allotment.js" defer></script>
+    <script src="/js/admin_layout.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <a href="/dashboard.html" style="text-decoration:none; color:#555;">&larr; Back to Dashboard</a>
+        <h2 style="border-bottom:2px solid #eee; padding-bottom:10px;">Allotment Management</h2>
+
+        <div class="form-section">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                <div>
+                    <label for="type" style="font-weight:bold;">Transaction Type:</label>
+                    <select id="type" style="width:100%; padding:8px; margin-top:5px;">
+                        <option value="">--Select Type--</option>
+                        <option value="Allotment">Allotment (Regular Budget)</option>
+                        <option value="Supplemental">Supplemental Budget</option>
+                        <option value="Realignment">Realignment (Transfer)</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="year" style="font-weight:bold;">Budget Year:</label>
+                    <input type="number" id="year" placeholder="YYYY" value="2026" style="width:100%; padding:8px; margin-top:5px; font-weight:bold;">
+                </div>
+            </div>
+            
+            <div id="desc_section" style="display:none; margin-top:15px;">
+                <label for="description" style="font-weight:bold;">Description / Remarks:</label>
+                <input type="text" id="description" style="width:100%; padding:8px; margin-top:5px;" placeholder="e.g. SB No. 1 Series of 2026">
+            </div>
+        </div>
+
+        <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
+
+        <div id="allotment_section" class="form-section" style="display:none;">
+            <h3>Add Budget Items</h3>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
+                <div>
+                    <label for="sector">Sector:</label>
+                    <select id="sector" style="width:100%; padding:8px;"></select>
+                </div>
+                <div>
+                    <label for="office_id">Office:</label>
+                    <select id="office_id" style="width:100%; padding:8px;"></select>
+                </div>
+            </div>
+            
+            <div style="background:#f9f9f9; padding:15px; border-radius:5px; border:1px solid #ddd;">
+                <label for="object">Object of Expenditure:</label>
+                <select id="object" style="width:100%; margin-bottom:10px;">
+                    <option value="">--Select--</option><option value="PS">PS</option><option value="MOOE">MOOE</option><option value="CO">CO</option>
+                </select>
+                
+                <label for="ppa_select">PPA:</label>
+                <select id="ppa_select"></select>
+                <div style="margin-top:5px;"></div>
+                <label for="sub_ppa_select">Sub-PPA:</label>
+                <select id="sub_ppa_select"></select>
+                <div style="margin-top:5px;"></div>
+                <label for="sub_sub_ppa_select">Sub-Sub-PPA:</label>
+                <select id="sub_sub_ppa_select"></select>
+                
+                <div style="margin-top:15px;">
+                    <label for="ppa_amount" style="font-weight:bold;">Amount:</label>
+                    <input type="number" id="ppa_amount" step="0.01" style="padding:8px; width:150px;">
+                    <button id="addPpaButton" class="button-primary" style="padding:8px 15px;">+ Add to List</button>
+                </div>
+            </div>
+
+            <h4 style="margin-top:15px;">Items to Save:</h4>
+            <div id="ppas_list" style="border:1px solid #ddd; padding:10px; min-height:50px; background:white;"></div>
+        </div>
+
+        <div id="realignment_section" class="form-section" style="display: none; flex-direction: row; gap: 20px;">
+            <div class="realignment-column" style="flex: 1; border:1px solid #ffcccc; padding:15px; border-radius:5px; background:#fff5f5;">
+                <h3 style="color:#c0392b; margin-top:0;">SOURCE (From)</h3>
+                
+                <label for="from_sector">Sector:</label><select id="from_sector" style="width:100%;"></select><br><br>
+                <label for="from_office_id">Office:</label><select id="from_office_id" style="width:100%;"></select><br><br>
+                
+                <hr style="border-top:1px dashed #ccc;">
+                
+                <label for="from_object">Object:</label>
+                <select id="from_object" style="width:100%; margin-bottom:10px;">
+                    <option value="">--Select--</option><option value="PS">PS</option><option value="MOOE">MOOE</option><option value="CO">CO</option>
+                </select>
+
+                <label>PPA:</label><select id="from_ppa_select"></select><div style="margin:5px;"></div>
+                <label>Sub-PPA:</label><select id="from_sub_ppa_select"></select><div style="margin:5px;"></div>
+                <label>Sub-Sub-PPA:</label><select id="from_sub_sub_ppa_select"></select>
+
+                <div style="margin-top:15px; background:white; padding:5px; border:1px solid #ddd;">
+                    <strong>Available Balance:</strong> <span id="existing_amount" style="color:#c0392b; font-weight:bold; font-size:1.2em;">0.00</span>
+                </div>
+
+                <div style="margin-top:10px;">
+                    <label for="from_amount">Amount to Realign:</label>
+                    <input type="number" id="from_amount" step="0.01" style="padding:5px;">
+                </div>
+                <button id="addFromPpaButton" style="width:100%; margin-top:10px; padding:8px;">Add Source</button>
+                
+                <div id="from_list" style="margin-top:10px; border-top:1px solid #ccc; padding-top:5px;"></div>
+                <p>Total From: <span id="total_from_amount" style="font-weight:bold;">0.00</span></p>
+            </div>
+
+            <div class="realignment-column" style="flex: 1; border:1px solid #ccffcc; padding:15px; border-radius:5px; background:#f0fff0;">
+                <h3 style="color:#27ae60; margin-top:0;">DESTINATION (To)</h3>
+                 
+                <label for="to_sector">Sector:</label><select id="to_sector" style="width:100%;"></select><br><br>
+                <label for="to_office_id">Office:</label><select id="to_office_id" style="width:100%;"></select><br><br>
+                
+                <hr style="border-top:1px dashed #ccc;">
+
+                <label for="to_object">Object:</label>
+                <select id="to_object" style="width:100%; margin-bottom:10px;">
+                    <option value="">--Select--</option><option value="PS">PS</option><option value="MOOE">MOOE</option><option value="CO">CO</option>
+                </select>
+                
+                <label>PPA:</label><select id="to_ppa_select"></select><div style="margin:5px;"></div>
+                <label>Sub-PPA:</label><select id="to_sub_ppa_select"></select><div style="margin:5px;"></div>
+                <label>Sub-Sub-PPA:</label><select id="to_sub_sub_ppa_select"></select>
+
+                <div style="margin-top:15px;">
+                    <label for="to_amount">Amount to Give:</label>
+                    <input type="number" id="to_amount" step="0.01" style="padding:5px;">
+                </div>
+                <button id="addToPpaButton" style="width:100%; margin-top:10px; padding:8px;">Add Destination</button>
+                
+                <div id="to_list" style="margin-top:10px; border-top:1px solid #ccc; padding-top:5px;"></div>
+                <p>Total To: <span id="total_to_amount" style="font-weight:bold;">0.00</span></p>
+            </div>
+        </div>
+
+        <div style="text-align:right; margin-top:20px;">
+            <button id="submitAllotmentButton" class="button-success" style="padding:12px 30px; font-size:1.1em;">
+                <i class="fas fa-save"></i> Submit Transaction
+            </button>
+        </div>
+
+        <div style="margin-top: 50px; border-top: 2px solid #ccc; padding-top: 20px;">
+            <h3>Manage Allotment Transactions</h3>
+            <table class="report-table" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Type</th>
+                        <th>Office</th>
+                        <th>PPA / Category</th>
+                        <th style="text-align:right;">Amount</th>
+                        <th style="text-align:center;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="recentTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5);">
+        <div class="modal-content" style="background-color:white; margin:10% auto; padding:20px; width:350px; border-radius:8px; box-shadow:0 4px 15px rgba(0,0,0,0.2);">
+            <h3 style="margin-top:0;">Edit Amount</h3>
+            <input type="hidden" id="edit_id">
+            
+            <label for="edit_amount" style="display:block; margin-bottom:5px; font-weight:bold;">Current Amount:</label>
+            <input type="number" id="edit_amount" step="0.01" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+            
+            <div style="margin-top:15px; text-align:right;">
+                <button onclick="document.getElementById('editModal').style.display='none'" style="cursor:pointer; padding:8px 15px; background:#ddd; border:none; border-radius:3px;">Cancel</button>
+                <button onclick="saveEdit()" class="button-success" style="margin-left:10px; padding:8px 15px;">Update</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

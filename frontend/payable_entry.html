@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Accounts Payable Entry</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/auth-guard.js"></script>
+    <script src="/js/helpers.js" defer></script>
+    <script src="/js/payable_entry.js" defer></script>
+    <script src="/js/admin_layout.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <a href="/dashboard.html">&larr; Back to Dashboard</a>
+        <h2>Add Accounts Payable</h2>
+        <hr>
+        <form id="payable-form">
+            <label for="payable_type">Type of Accounts Payable:</label>
+            <select id="payable_type">
+                <optgroup label="General Fund">
+                    <option value="GF - Main">GF - Main</option>
+                    <option value="20% MDF">20% MDF</option>
+                    <option value="5%CF">5%CF</option>
+                </optgroup>
+                <option value="SEF">SEF</option>
+                <optgroup label="Trust Fund">
+                    <option value="TF - Main">TF - Main</option>
+                    <option value="PCF">PCF</option>
+                    <option value="Tublay Professional Fees">Tublay Professional Fees</option>
+                    <option value="HCI - Charges">HCI - Charges</option>
+                </optgroup>
+            </select><br>
+            <label for="date">Date:</label>
+            <input type="date" id="date"><br>
+            <label for="dv_no">DV No:</label>
+            <input type="text" id="dv_no"><br>
+            <label for="particulars">Particulars:</label>
+            <input type="text" id="particulars" size="40"><br>
+            <label for="object_of_expenditure">Object of Expenditure:</label>
+            <select id="object_of_expenditure">
+                <option value="PS">PS</option>
+                <option value="MOOE">MOOE</option>
+                <option value="CO">CO</option>
+            </select><br>
+            <label for="total_amount">Total Amount:</label>
+            <input type="number" id="total_amount" step="0.01"><br>
+            <button type="button" id="addEntryButton">Add Entry</button>
+        </form>
+    </div>
+</body>
+</html>

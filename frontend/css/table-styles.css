@@ -1,0 +1,67 @@
+/* Main style for all report tables */
+.report-table {
+    width: 100%;
+    margin-top: 20px;
+    font-size: 0.9em;
+    border-collapse: collapse;
+    border: 1px solid #dee2e6;
+}
+
+/* Styling for table headers and cells */
+.report-table th,
+.report-table td {
+    border: 1px solid #dee2e6;
+    padding: 8px;
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* Left-align the first column for descriptions */
+.report-table th:first-child,
+.report-table td:first-child {
+    text-align: left;
+}
+
+/* Styling for the main header row of the table */
+.report-table thead {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+/* Specific styling for grand total rows */
+.total-row {
+    background-color: #e9ecef;
+    font-weight: bold;
+    border-top: 2px solid #333;
+}
+
+/* Styling for sub-total rows */
+.subtotal-row {
+    background-color: #f8f9fa;
+    font-style: italic;
+}
+
+/* Styling for dark sector header rows */
+.sector-row td {
+    background-color: #343a40;
+    color: white;
+    font-weight: bold;
+    text-align: center !important;
+}
+
+/* A light highlight for budget-related rows */
+.budget-row {
+    background-color: #fff3cd;
+}
+
+/* A specific style for monthly totals */
+.monthly-total-row {
+    background-color: #e2e3e5;
+    font-style: italic;
+}
+
+/* A specific style for quarterly totals */
+.quarterly-total-row {
+    background-color: #cfe2ff;
+    font-weight: bold;
+}

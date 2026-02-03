@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Categories (PPAs)</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/table-styles.css">
+    <script src="/js/auth-guard.js"></script>
+    <script src="/js/helpers.js" defer></script>
+    <script src="/js/category.js" defer></script>
+    <script src="/js/admin_layout.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <a href="/dashboard.html">&larr; Back to Dashboard</a>
+        <h2>Manage Categories (PPAs)</h2>
+
+        <div class="form-section">
+            <h3 id="form-title">Add New Category</h3>
+            <form id="category-form">
+                <input type="hidden" id="edit-category-id">
+                
+                <div class="form-grid">
+                    <label for="object">Object of Expenditure:</label>
+                    <select id="object" required>
+                        <option value="">-- Select --</option>
+                        <option value="PS">PS</option>
+                        <option value="MOOE">MOOE</option>
+                        <option value="CO">CO</option>
+                    </select>
+
+                    <label for="ppa">PPA:</label>
+                    <input type="text" id="ppa" required placeholder="e.g., General Administration">
+
+                    <label for="subppa">Sub-PPA:</label>
+                    <input type="text" id="subppa" placeholder="Optional">
+
+                    <label for="subsubppa">Sub-Sub-PPA:</label>
+                    <input type="text" id="subsubppa" placeholder="Optional">
+                </div>
+
+                <div style="margin-top: 15px;">
+                    <button type="submit" id="submit-button" class="button-primary">Add Category</button>
+                    <button type="button" id="cancel-button" style="display: none; background-color: #6c757d;">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="form-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3>Existing Categories</h3>
+                <input type="text" id="search-input" placeholder="Search categories..." style="padding: 8px; width: 300px; border: 1px solid #ccc; border-radius: 4px;">
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table class="report-table category-manage-table">
+                    <thead>
+                        <tr>
+                            <th>Object</th>
+                            <th>PPA</th>
+                            <th>Sub-PPA</th>
+                            <th>Sub-Sub-PPA</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categories-list">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

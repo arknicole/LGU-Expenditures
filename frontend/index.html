@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - LGU Expenditure System</title>
+    <link rel="stylesheet" href="/css/style.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="/js/index.js" defer></script>
+</head>
+<body class="login-body">
+    
+    <div class="login-card">
+        <div class="login-header">
+            <div class="icon-circle">
+                <i class="fas fa-landmark fa-2x"></i>
+            </div>
+            <h2>LGU Expenditure System</h2>
+            <p>Please sign in to your account</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="username"><i class="fas fa-user"></i> Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            </div>
+
+            <div class="input-group">
+                <label for="password"><i class="fas fa-lock"></i> Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="login-btn">Sign In</button>
+            
+            <div id="error-message" class="error-msg"></div>
+        </form>
+    </div>
+
+</body>
+</html>

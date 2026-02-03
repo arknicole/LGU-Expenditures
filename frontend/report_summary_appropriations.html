@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Summary of Appropriations</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/table-styles.css">
+    <script src="/js/auth-guard.js"></script>
+    <script src="/js/helpers.js" defer></script>
+    <script src="/js/report_summary_appropriations.js" defer></script>
+    <script src="/js/admin_layout.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <a href="/dashboard.html">&larr; Back to Dashboard</a>
+        <div class="print-header-only">
+            <h3>Republic of the Philippines</h3>
+            <h3>Province of Benguet</h3>
+            <h2>MUNICIPALITY OF TUBLAY</h2>
+         </div>
+        <h1>Summary of Appropriations and Expenditures</h1>
+
+        <div class="filter-section">
+            <label for="year_select">Select Year:</label>
+            <select id="year_select"></select>
+
+            <label for="period_select">View By:</label>
+            <select id="period_select">
+                <option value="yearly">Yearly</option>
+                <option value="quarterly">Quarterly</option>
+                <option value="monthly">Monthly</option>
+            </select>
+
+            <div id="sub_period_section" style="display: none; margin-left: 15px;">
+                <label for="sub_period_select" id="sub_period_label">Month:</label>
+                <select id="sub_period_select"></select>
+            </div>
+
+            <button id="viewReportButton">View Report</button>
+
+            <button onclick="window.print()" class="button-success" style="margin-left: 10px;">
+                <i class="fas fa-print"></i> Print Report
+            </button>
+        </div>
+
+        <div id="report_container" style="overflow-x: auto;">
+            </div>
+        
+    </div>
+
+        
+        <div class="print-signatories">
+    <div class="sig-box">
+        <p class="sig-label">Prepared by:</p>
+        
+        <input type="text" class="sig-input" value="FERLYN P. SUAKING" placeholder="Type Name Here">
+        
+        <input type="text" class="sig-pos-input" value="RCC II" placeholder="Type Position Here">
+    </div>
+
+    <div class="sig-box">
+        <p class="sig-label">Certified Correct:</p>
+        
+        <input type="text" class="sig-input" value="JOYCE L. HERMAN" placeholder="Type Name Here">
+        
+        <input type="text" class="sig-pos-input" value="Municipal Treasurer" placeholder="Type Position Here">
+    </div>
+        </div>
+</body>
+</html>

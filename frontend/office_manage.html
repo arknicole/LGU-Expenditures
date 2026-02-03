@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Offices</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/table-styles.css">
+    <script src="/js/auth-guard.js"></script>
+    <script src="/js/helpers.js" defer></script>
+    <script src="/js/office_manage.js" defer></script>
+    <script src="/js/admin_layout.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <a href="/dashboard.html">&larr; Back to Dashboard</a>
+        <h2>Manage Offices</h2>
+
+        <div class="form-section">
+            <h3 id="form-title">Add New Office</h3>
+            <form id="office-form">
+                <input type="hidden" id="edit-office-id">
+                
+                <div class="form-grid">
+                    <label for="sector">Sector:</label>
+                    <select id="sector" required>
+                        <option value="">-- Select Sector --</option>
+                        <option value="GENERAL PUBLIC SERVICES">GENERAL PUBLIC SERVICES</option>
+                        <option value="SOCIAL SERVICES AND PUBLIC WELFARE">SOCIAL SERVICES AND PUBLIC WELFARE</option>
+                        <option value="ECONOMIC SERVICES">ECONOMIC SERVICES</option>
+                        <option value="SPECIAL EDUCATION FUND">SPECIAL EDUCATION FUND</option>
+                        <option value="OTHER SERVICES">OTHER SERVICES</option>
+                    </select>
+
+                    <label for="office_name">Office Name:</label>
+                    <input type="text" id="office_name" required placeholder="e.g. Mayor's Office">
+                </div>
+
+                <div style="margin-top: 15px;">
+                    <button type="submit" id="submit-button" class="button-primary">Add Office</button>
+                    <button type="button" id="cancel-button" style="display: none; background-color: #6c757d;">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="form-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3>Existing Offices</h3>
+                <input type="text" id="search-input" placeholder="Search offices..." style="padding: 8px; width: 300px; border: 1px solid #ccc; border-radius: 4px;">
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table class="report-table category-manage-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40%;">Sector</th>
+                            <th style="width: 40%;">Office Name</th>
+                            <th style="width: 20%;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="offices-list">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

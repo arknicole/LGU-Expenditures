@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Records of Checks Issued</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/table-styles.css">
+    
+    <script src="/js/auth-guard.js"></script>
+    <script src="/js/helpers.js" defer></script>
+    <script src="/js/admin_layout.js" defer></script>
+    <script src="/js/report_records_of_cheques.js?v=2" defer></script>
+</head>
+<body>
+    <div class="container">
+        <div class="print-header-only">
+            <h3>Republic of the Philippines</h3>
+            <h3>Province of Benguet</h3>
+            <h2>MUNICIPALITY OF TUBLAY</h2>
+         </div>
+        <h2>Records of Checks Issued</h2>
+
+        <div class="filter-section">
+            <label for="year_select">Select Year:</label>
+            <select id="year_select"></select>
+
+            <label for="period_select">View By:</label>
+            <select id="period_select">
+                <option value="yearly">Yearly</option>
+                <option value="quarterly">Quarterly</option>
+                <option value="monthly">Monthly</option>
+            </select>
+
+            <div id="sub_period_section" style="display: none; margin-left: 15px;">
+                <label for="sub_period_select" id="sub_period_label">Month:</label>
+                <select id="sub_period_select"></select>
+            </div>
+
+            <button id="viewReportButton">View Report</button>
+
+            <button onclick="window.print()" class="button-success" style="margin-left: 10px;">
+                <i class="fas fa-print"></i> Print Report
+            </button>
+        </div>
+
+        
+
+        <div id="report_container" style="overflow-x: auto; margin-top: 20px;">
+            </div>
+        
+        
+    </div>
+
+        <div class="print-signatories">
+    <div class="sig-box">
+        <p class="sig-label">Prepared by:</p>
+        
+        <input type="text" class="sig-input" value="FERLYN P. SUAKING" placeholder="Type Name Here">
+        
+        <input type="text" class="sig-pos-input" value="RCC II" placeholder="Type Position Here">
+    </div>
+
+    <div class="sig-box">
+        <p class="sig-label">Certified Correct:</p>
+        
+        <input type="text" class="sig-input" value="JOYCE L. HERMAN" placeholder="Type Name Here">
+        
+        <input type="text" class="sig-pos-input" value="Municipal Treasurer" placeholder="Type Position Here">
+    </div>
+        </div>
+
+        <div id="editModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5);">
+    <div class="modal-content" style="background-color:white; margin:10% auto; padding:20px; width:400px; border-radius:8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+        <h3 style="margin-top:0;">Edit Transaction</h3>
+        <input type="hidden" id="edit_id">
+        
+        <label style="display:block; margin-top:10px;">Date:</label>
+        <input type="date" id="edit_date" style="width:100%; padding:5px;">
+        
+        <label style="display:block; margin-top:10px;">Check No:</label>
+        <input type="text" id="edit_check_no" style="width:100%; padding:5px;">
+
+        <label style="display:block; margin-top:10px;">DV No:</label>
+        <input type="text" id="edit_dv_no" style="width:100%; padding:5px;">
+        
+        <label style="display:block; margin-top:10px;">Particulars:</label>
+        <textarea id="edit_particulars" rows="3" style="width:100%; padding:5px;"></textarea>
+        
+        <label style="display:block; margin-top:10px;">Net Amount:</label>
+        <input type="number" id="edit_amount" step="0.01" style="width:100%; padding:5px;">
+        
+        <div style="margin-top:20px; text-align:right;">
+            <button onclick="document.getElementById('editModal').style.display='none'" style="padding:8px 15px; cursor:pointer;">Cancel</button>
+            <button onclick="saveEdit()" class="button-success" style="padding:8px 15px; margin-left:10px;">Save Changes</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
