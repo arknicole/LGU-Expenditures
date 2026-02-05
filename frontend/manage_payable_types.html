@@ -2,36 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Manage Accounts Payable Types</title>
+    <title>Manage Categories</title>
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/table-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <script src="/js/auth-guard.js"></script>
-    <script src="/js/manage_payable_types.js" defer></script>
     <script src="/js/admin_layout.js" defer></script>
+    <script src="/js/manage_payable_types.js" defer></script>
 </head>
 <body>
     <div class="container">
-        <a href="/dashboard.html">&larr; Back to Dashboard</a>
-        <h1>Manage Accounts Payable Types</h1>
+        <a href="/dashboard.html" style="text-decoration:none; color:#555;">&larr; Back to Dashboard</a>
+        <h2 style="border-bottom: 2px solid #eee; padding-bottom: 10px;">Manage Transaction Categories</h2>
 
-        <div class="form-section">
-            <h3>Add New Type</h3>
-            <form id="add-type-form">
-                <label for="fund_group">Fund Group:</label>
-                <input type="text" id="fund_group" placeholder="e.g., General Fund, Trust Fund">
-                <label for="type_name">Type Name:</label>
-                <input type="text" id="type_name" placeholder="e.g., GF - Main, PCF">
-                <button type="button" id="addTypeButton">Add Type</button>
-            </form>
+        <div class="form-section" style="background:#f9f9f9; padding:15px; border-radius:5px; border:1px solid #ddd; display:flex; gap:10px; align-items:flex-end;">
+            <div style="flex:1;">
+                <label for="type_name" style="font-weight:bold;">New Category Name:</label>
+                <input type="text" id="type_name" placeholder="" style="width:100%; padding:8px;">
+            </div>
+            <button id="addTypeButton" class="button-success" style="padding:9px 15px;">
+                <i class="fas fa-plus"></i> Add Category
+            </button>
         </div>
 
-        <div class="form-section">
-            <h3>Existing Types</h3>
-            <table class="report-table">
+        <div style="margin-top:20px;">
+            <table class="report-table" style="width:100%;">
                 <thead>
                     <tr>
-                        <th>Fund Group</th>
-                        <th>Type Name</th>
-                        <th>Action</th>
+                        <th style="width:50px;">ID</th>
+                        <th>Category Name</th>
+                        <th style="width:100px; text-align:center;">Action</th>
                     </tr>
                 </thead>
                 <tbody id="types_table_body">

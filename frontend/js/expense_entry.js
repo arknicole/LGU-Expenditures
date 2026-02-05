@@ -2,10 +2,12 @@ let voucherItems = [];
 let categoryCache = []; 
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. Initialize Select2
     $(document).ready(function() {
         $('#sector, #office_id').select2({ width: '100%' });
         $('#object').select2({ width: '100%' });
         $('#ppa_select, #sub_ppa_select, #sub_sub_ppa_select').select2({ width: '100%' });
+        $('#payable_type_id').select2({ width: '100%' }); 
 
         $('#sector').on('change', handleSectorChange);
         $('#object').on('change', function() { loadCategories($(this).val()); });
@@ -15,13 +17,69 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     populateSectors();
+    // 2. Load the Payable Types List ONCE
+    loadPayableTypes(); 
+
     document.getElementById('addItemButton').addEventListener('click', addItemToVoucher);
     document.getElementById('submitVoucherButton').addEventListener('click', submitVoucher);
 
     const deductionInputs = document.querySelectorAll('.deductions-grid input');
     deductionInputs.forEach(input => { input.addEventListener('input', calculateNet); });
     document.getElementById('gross').addEventListener('input', calculateNet);
+    
+    // 3. Attach listener to Radio Buttons (Only for UI logic)
+    // Note: This logic function needs to be global if called by onclick in HTML, 
+    // or attached here. I attached it here to be cleaner.
+    const radios = document.querySelectorAll('input[name="trans_type"]');
+    radios.forEach(radio => radio.addEventListener('change', toggleCheckField));
+    
+    // 4. Run initial UI state
+    toggleCheckField(); 
 });
+
+// --- LOAD PAYABLE TYPES (Runs Once) ---
+async function loadPayableTypes() {
+    const typeSelect = document.getElementById('payable_type_id');
+    typeSelect.innerHTML = '<option value="">Loading...</option>';
+    
+    try {
+        // No filter query param needed
+        const res = await fetch('/api/payable-types/list');
+        const data = await res.json();
+        
+        typeSelect.innerHTML = '<option value="">-- Select Category --</option>';
+        if (data.success && data.data) {
+            data.data.forEach(t => {
+                const option = new Option(t.name, t.id);
+                typeSelect.add(option);
+            });
+            $('#payable_type_id').trigger('change.select2');
+        }
+    } catch (err) {
+        console.error("Error loading types:", err);
+        typeSelect.innerHTML = '<option value="">Error loading list</option>';
+    }
+}
+
+// --- UI LOGIC: Expense vs Payable ---
+// This ONLY handles the Visuals and Budget restriction logic
+window.toggleCheckField = function() {
+    const type = document.querySelector('input[name="trans_type"]:checked').value;
+    const balanceContainer = document.getElementById('display_balance').parentElement;
+    
+    if (type === 'Payable') {
+        // Visual: Dim the balance box
+        balanceContainer.style.opacity = '0.5';
+        balanceContainer.innerHTML = '<strong><i class="fas fa-wallet"></i> Available Balance: </strong><span id="display_balance" style="font-size:1.2em; font-weight:bold;">( unrestricted )</span>';
+    } else {
+        // Visual: Active balance box
+        balanceContainer.style.opacity = '1';
+        balanceContainer.innerHTML = '<strong><i class="fas fa-wallet"></i> Available Balance: </strong><span id="display_balance" style="font-size:1.2em; font-weight:bold;">0.00</span>';
+        checkAvailableBalance(); // Refresh number
+    }
+}
+
+// --- STANDARD LOGIC ---
 
 async function populateSectors() {
     const sectorSelect = document.getElementById('sector');
@@ -93,6 +151,9 @@ function populateDropdown(selectElement, items, defaultText) {
 }
 
 async function checkAvailableBalance() {
+    const type = document.querySelector('input[name="trans_type"]:checked').value;
+    if(type === 'Payable') return 0; // Skip if Payable
+
     const officeId = $('#office_id').val();
     const year = 2026; 
     const ppa = $('#ppa_select').val();
@@ -100,6 +161,8 @@ async function checkAvailableBalance() {
     const subsub = $('#sub_sub_ppa_select').val();
     const display = document.getElementById('display_balance');
     
+    if (!display) return 0; 
+
     if (!officeId || !ppa) { display.innerText = '0.00'; return 0; }
     const category = categoryCache.find(c => c.ppa === ppa && c.sub_ppa === (sub||null) && c.sub_sub_ppa === (subsub||null));
     if (!category) { display.innerText = '0.00'; return 0; }
@@ -125,6 +188,8 @@ function calculateNet() {
     return net;
 }
 
+// --- ADD ITEM LOGIC ---
+
 async function addItemToVoucher() {
     const object = $('#object').val();
     const ppa = $('#ppa_select').val();
@@ -135,20 +200,30 @@ async function addItemToVoucher() {
 
     if (!object || !ppa || !particulars || gross <= 0) { alert("Please fill in all details."); return; }
 
-    const currentBalance = await checkAvailableBalance();
-    const pendingAmount = voucherItems.filter(item => item.ppa === ppa && item.sub === sub && item.subsub === subsub).reduce((sum, item) => sum + item.gross, 0);
-    const actualAvailable = currentBalance - pendingAmount;
+    const category = categoryCache.find(c => c.ppa === ppa && c.sub_ppa === (sub||null) && c.sub_sub_ppa === (subsub||null));
+    if(!category) { alert("Invalid Category selection"); return; }
 
-    if (gross > actualAvailable) {
-        alert(`Insufficient Balance! Available: ₱${actualAvailable.toLocaleString()}.`);
-        return;
+    const type = document.querySelector('input[name="trans_type"]:checked').value;
+    if (type === 'Expense') {
+        const currentBalance = await checkAvailableBalance();
+        const pendingAmount = voucherItems.filter(item => item.category_id === category.id).reduce((sum, item) => sum + item.gross, 0);
+        const actualAvailable = currentBalance - pendingAmount;
+
+        if (gross > actualAvailable) {
+            alert(`Insufficient Balance! Available: ₱${actualAvailable.toLocaleString()}.`);
+            return;
+        }
     }
 
     const deductions = {};
     ['ewt', 'vat_pt', 'municipal_tax', 'warranty', 'damages', 'pag_ibig', 'others'].forEach(id => deductions[id] = parseFloat(document.getElementById(id).value) || 0);
     const net = calculateNet();
 
-    const item = { object, ppa, sub, subsub, particulars, gross, deductions, net };
+    const item = { 
+        category_id: category.id, 
+        object, ppa, sub, subsub, particulars, gross, deductions, net 
+    };
+    
     voucherItems.push(item);
     renderVoucherTable();
     
@@ -180,17 +255,36 @@ window.removeItem = function(index) { voucherItems.splice(index, 1); renderVouch
 
 async function submitVoucher() {
     if (voucherItems.length === 0) { alert("Please add at least one item."); return; }
+    
+    const type = document.querySelector('input[name="trans_type"]:checked').value;
+    const check_no = document.getElementById('check_no').value;
+    const payable_type_id = $('#payable_type_id').val(); // Capture ID
+
+    if (!check_no) {
+        alert("Check Number is required for this transaction.");
+        return;
+    }
+
+    if (!payable_type_id) {
+        alert("Please select a Payee/Category.");
+        return;
+    }
+
     const payload = {
+        type: type, 
+        payable_type_id: payable_type_id,
         date: document.getElementById('date').value,
         dv_no: document.getElementById('dv_no').value,
-        check_no: document.getElementById('check_no').value,
+        check_no: check_no,
         office_id: $('#office_id').val(), 
         items: voucherItems
     };
+
     if (!payload.date || !payload.office_id) { alert("Please fill in Voucher Date and Office."); return; }
+    
     try {
         const res = await fetch('/api/expense/add-voucher', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         const result = await res.json();
-        if (result.success) { alert("Voucher saved!"); location.reload(); } else { alert("Error: " + result.message); }
+        if (result.success) { alert("Transaction saved!"); location.reload(); } else { alert("Error: " + result.message); }
     } catch (err) { console.error(err); alert("Failed to save."); }
 }

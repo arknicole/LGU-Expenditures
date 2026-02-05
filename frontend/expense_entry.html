@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add Expense Voucher</title>
+    <title>Expense & Payable Entry</title>
+    
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/table-styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -19,23 +20,52 @@
 <body>
     <div class="container">
         <a href="/dashboard.html" style="text-decoration:none; color:#555;">&larr; Back to Dashboard</a>
-        <h2 style="border-bottom:2px solid #eee; padding-bottom:10px;">Add Expense Voucher</h2>
+        <h2 style="border-bottom:2px solid #eee; padding-bottom:10px;">Voucher Entry</h2>
+
+        <div class="form-section" style="background:#fff8e1; border:1px solid #ffeeba; display:flex; flex-wrap:wrap; gap:30px; align-items:center;">
+            
+            <div>
+                <span style="font-weight:bold; color:#856404; display:block; margin-bottom:5px;"><i class="fas fa-exchange-alt"></i> Transaction Type:</span>
+                <label style="cursor:pointer; margin-right:15px; font-size:1.1em;">
+                    <input type="radio" name="trans_type" value="Expense" checked onchange="toggleCheckField()"> 
+                    Regular Expense
+                </label>
+                <label style="cursor:pointer; font-size:1.1em;">
+                    <input type="radio" name="trans_type" value="Payable" onchange="toggleCheckField()"> 
+                    Accounts Payable
+                </label>
+            </div>
+
+            <div style="flex:1; min-width: 250px;">
+                <label for="payable_type_id" style="font-weight:bold; color:#856404; display:block; margin-bottom:5px;">Payee / Category:</label>
+                <select id="payable_type_id" style="width:100%; padding:8px;">
+                    <option value="">-- Select Category --</option>
+                </select>
+            </div>
+        </div>
+
         <div class="form-section">
             <h3><i class="fas fa-info-circle"></i> Voucher Details</h3>
             <div class="form-grid" style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:15px;">
-                <div class="input-group"><label for="date">Date:</label><input type="date" id="date" style="width:100%; padding:8px;"></div>
-                <div class="input-group"><label for="dv_no">DV No.:</label><input type="text" id="dv_no" placeholder="e.g. 100-2025-01-001" style="width:100%; padding:8px;"></div>
-                <div class="input-group"><label for="check_no">Check No:</label><input type="text" id="check_no" placeholder="e.g. 1234567" style="width:100%; padding:8px;"></div>
-                <div class="input-group"><label for="sector">Office Sector:</label><select id="sector" style="width:100%; padding:8px;"></select></div>
-                <div class="input-group" style="grid-column: span 2;"><label for="office_id">Office:</label><select id="office_id" style="width:100%; padding:8px;"></select></div>
+                <div class="input-group"><label>Date:</label><input type="date" id="date" style="width:100%; padding:8px;"></div>
+                <div class="input-group"><label>DV No.:</label><input type="text" id="dv_no" placeholder="e.g. 100-2025-01-001" style="width:100%; padding:8px;"></div>
+                
+                <div class="input-group" id="check_no_group">
+                    <label>Check No:</label>
+                    <input type="text" id="check_no" placeholder="e.g. 1234567" style="width:100%; padding:8px;">
+                </div>
+                
+                <div class="input-group"><label>Sector:</label><select id="sector" style="width:100%; padding:8px;"></select></div>
+                <div class="input-group" style="grid-column: span 2;"><label>Office:</label><select id="office_id" style="width:100%; padding:8px;"></select></div>
             </div>
         </div>
 
         <div class="form-section" style="background-color: #fcfcfc; border:1px solid #ddd;">
-            <h3><i class="fas fa-plus-circle"></i> Add Expense Item</h3>
+            <h3><i class="fas fa-plus-circle"></i> Add Item Details</h3>
+            
             <div class="form-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
                 <div style="grid-column: span 2;">
-                    <label for="object">Object of Expenditure:</label>
+                    <label>Object:</label>
                     <select id="object" style="width:100%; padding:8px;">
                         <option value="">-- Select Object --</option>
                         <option value="PS">Personal Services (PS)</option>
@@ -43,19 +73,27 @@
                         <option value="CO">Capital Outlay (CO)</option>
                     </select>
                 </div>
+
                 <div class="input-group" style="grid-column: span 2;"><label>PPA:</label><select id="ppa_select" style="width:100%;"></select></div>
                 <div class="input-group"><label>Sub-PPA:</label><select id="sub_ppa_select" style="width:100%;"></select></div>
                 <div class="input-group"><label>Sub-Sub-PPA:</label><select id="sub_sub_ppa_select" style="width:100%;"></select></div>
                 
                 <div style="grid-column: span 2; background:#e8f8f5; color:#0e6655; padding:10px; border-radius:4px; border:1px solid #a3e4d7;">
-                    <strong><i class="fas fa-wallet"></i> Available Balance: </strong><span id="display_balance" style="font-size:1.2em; font-weight:bold;">0.00</span>
+                    <strong><i class="fas fa-wallet"></i> Available Balance: </strong>
+                    <span id="display_balance" style="font-size:1.2em; font-weight:bold;">0.00</span>
                 </div>
-                <div style="grid-column: span 2;"><label for="particulars">Particulars:</label><textarea id="particulars" rows="2" style="width:100%; padding:8px;" placeholder="Enter description..."></textarea></div>
+
+                <div style="grid-column: span 2;">
+                    <label>Particulars:</label>
+                    <textarea id="particulars" rows="2" style="width:100%; padding:8px;" placeholder="Enter description..."></textarea>
+                </div>
             </div>
             
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
             <h4 style="margin-bottom: 15px; color: #555;">Financials & Deductions</h4>
             <div class="deductions-grid" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px;">
-                <div class="input-group"><label for="gross" style="color:#2980b9;">Gross Amount:</label><input type="number" id="gross" value="0" step="0.01" style="font-weight:bold; border:2px solid #2980b9;"></div>
+                <div class="input-group"><label style="color:#2980b9;">Gross Amount:</label><input type="number" id="gross" value="0" step="0.01" style="font-weight:bold; border:2px solid #2980b9;"></div>
                 <div class="input-group"><label>EWT:</label><input type="number" id="ewt" value="0" step="0.01"></div>
                 <div class="input-group"><label>VAT/PT:</label><input type="number" id="vat_pt" value="0" step="0.01"></div>
                 <div class="input-group"><label>Mun. Tax:</label><input type="number" id="municipal_tax" value="0" step="0.01"></div>
@@ -66,7 +104,7 @@
             </div>
 
             <div style="background-color: #e9ecef; padding: 15px; border-radius: 5px; margin-top: 20px; display: flex; align-items: center; justify-content: flex-end; gap: 15px;">
-                <label for="net" style="font-size: 1.2rem; margin:0;">NET AMOUNT:</label>
+                <label style="font-size: 1.2rem; margin:0;">NET AMOUNT:</label>
                 <input type="text" id="net" readonly style="width: 200px; font-weight: bold; font-size: 1.2rem; color: #2c3e50; border: none; background: transparent; text-align: right;">
                 <button id="addItemButton" class="button-primary" style="font-size:1.1em; padding:10px 20px;"><i class="fas fa-plus"></i> Add Item</button>
             </div>
